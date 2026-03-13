@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VERGE | Premium Apparel</title>
+    <style>
+        :root {
+            --gold: #c5a059;
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray: #f4f4f4;
+            --transition-speed: 0.6s;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--white);
+            color: var(--black);
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: var(--black);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 70px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo-container img {
+            height: 60px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .logo-container img:hover { transform: scale(1.05); }
+
+        .nav-right { display: flex; align-items: center; gap: 30px; }
+
+        .nav-link {
+            text-decoration: none;
+            color: white;
+            font-size: 11px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover { color: var(--gold); }
+
+        .cart-icon-container { position: relative; cursor: pointer; }
+        .cart-svg { width: 22px; height: 22px; fill: white; transition: fill 0.3s; }
+        .cart-icon-container:hover .cart-svg { fill: var(--gold); }
+
+        #cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--gold);
+            color: black;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 5px;
+        }
+
+        /* --- PAGE TRANSITIONS --- */
+        .page { 
+            display: none; 
+            min-height: 90vh; 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* When this class is added via JS, the page fades and slides up */
+        .active-page { 
+            display: block; 
+            animation: fadeInUp var(--transition-speed) forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- CONTENT STYLING --- */
+        .hero-video-container {
+            position: relative;
+            height: 85vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%);
+            opacity: 0.6;
+        }
+
+        .hero-overlay { position: relative; z-index: 1; text-align: center; color: white; }
+        .hero-overlay h1 { font-size: 4rem; letter-spacing: 20px; margin: 0; }
+
+        .brand-story { padding: 100px 15%; text-align: center; }
+        .brand-story h2 { font-size: 1.8rem; letter-spacing: 10px; margin-bottom: 30px; }
+        .brand-story p { line-height: 2; font-size: 1rem; color: #444; max-width: 700px; margin: 0 auto; }
+
+        .container { padding: 80px 5%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+
+        .product-card { background: var(--gray); padding: 25px; text-align: center; transition: 0.4s; }
+        .product-card:hover { background: #eee; }
+        .product-img { width: 100%; height: 450px; background: #ddd; margin-bottom: 20px; object-fit: cover; }
+
+        .btn {
+            background: var(--black);
+            color: white;
+            border: none;
+            padding: 16px 35px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 3px;
+            transition: 0.3s;
+        }
+        .btn:hover { background: var(--gold); color: black; }
+
+        /* Cart & Checkout */
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .cart-table th { text-align: left; border-bottom: 1px solid black; padding: 15px; font-size: 12px; letter-spacing: 1px; }
+        .cart-table td { padding: 25px 15px; border-bottom: 1px solid #eee; }
+
+        .checkout-form { max-width: 450px; margin: 0 auto; background: var(--gray); padding: 50px; }
+        input { width: 100%; padding: 18px; margin: 12px 0; border: 1px solid #ddd; background: white; font-size: 14px; }
+
+        footer { background: #000; color: #444; text-align: center; padding: 60px; font-size: 10px; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-container" onclick="showPage('home-page')">
+            <img src="VERGE logo.png" alt="VERGE">
+        </div>
+        
+        <div class="nav-right">
+            <span class="nav-link" onclick="showPage('tshirts-page')">T-Shirts</span>
+            <div class="cart-icon-container" onclick="showPage('cart-page')">
+                <svg class="cart-svg" viewBox="0 0 24 24">
+                    <path d="M17.5,6h-2.5c0-1.657-1.343-3-3-3s-3,1.343-3,3h-2.5c-1.104,0-2,0.896-2,2v11c0,1.104,0.896,2,2,2h13c1.104,0,2-0.896,2-2V8C19.5,6.896,18.604,6,17.5,6z M12,5c0.552,0,1,0.448,1,1h-2C11,5.448,11.448,5,12,5z M17.5,19h-11V8h2.5v2h1v-2h3v2h1v-2h2.5V19z"/>
+                </svg>
+                <span id="cart-count">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <div id="home-page" class="page active-page">
+        <section class="hero-video-container">
+            <video autoplay muted loop playsinline id="bg-video">
+                <source src="VERGE ad.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay">
+                <h1>VERGE</h1>
+                <p>ESTABLISHED 2026</p>
+                <button class="btn" style="margin-top: 30px; background: white; color: black;" onclick="showPage('tshirts-page')">Explore Shop</button>
+            </div>
+        </section>
+
+        <section class="brand-story">
+            <h2>THE PHILOSOPHY</h2>
+            <p>
+                Verge is built on the intersection of modern luxury and raw authenticity. 
+                Our garments are designed for those who navigate the edge of culture, 
+                blending premium textiles with a minimalist aesthetic that stands the test of time.
+                <br><br>
+                Every stitch is a commitment to quality. Every silhouette is a statement of intent.
+            </p>
+        </section>
+    </div>
+
+    <div id="tshirts-page" class="page">
+        <section class="container">
+            <h2 style="text-align:center; letter-spacing: 10px; margin-bottom: 60px;">THE COLLECTION</h2>
+            <div class="grid">
+                <div class="product-card">
+                    <div class="product-img" style="background: url('https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800') center/cover;"></div>
+                    <h3>SIGNATURE STAR TEE</h3>
+                    <p class="price" style="color: var(--gold); font-weight: bold; margin: 10px 0;">$85.00</p>
+                    <button class="btn" onclick="addToCart('Signature Star Tee', 85)">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-img" style="background: url('https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800') center/cover;"></div>
+                    <h3>GHOST OVERSIZE</h3>
+                    <p class="price" style="color: var(--gold); font-weight: bold; margin: 10px 0;">$95.00</p>
+                    <button class="btn" onclick="addToCart('Ghost Oversize', 95)">Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <div class="product-img" style="background: url('https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800') center/cover;"></div>
+                    <h3>MIDNIGHT LUXE</h3>
+                    <p class="price" style="color: var(--gold); font-weight: bold; margin: 10px 0;">$110.00</p>
+                    <button class="btn" onclick="addToCart('Midnight Luxe', 110)">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="cart-page" class="page">
+        <section class="container">
+            <h2 style="text-align:center; letter-spacing: 5px;">SHOPPING BAG</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <table class="cart-table">
+                    <thead>
+                        <tr><th>ITEM</th><th>PRICE</th></tr>
+                    </thead>
+                    <tbody id="cart-items-list"></tbody>
+                </table>
+                <div style="text-align: right; margin-top: 50px;">
+                    <h3 style="letter-spacing: 2px;">TOTAL: $<span id="cart-total">0</span></h3>
+                    <button class="btn" style="background: var(--gold); color: black;" onclick="showPage('pay-page')">Proceed to Pay</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="pay-page" class="page">
+        <section class="container">
+            <h2 style="text-align:center; letter-spacing: 5px;">SECURE CHECKOUT</h2>
+            <div class="checkout-form">
+                <form onsubmit="alert('Order successfully sent to Verge Admin!'); return false;">
+                    <h4 style="letter-spacing: 2px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">SHIPPING</h4>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="text" placeholder="Full Address" required>
+                    
+                    <h4 style="margin-top:40px; letter-spacing: 2px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">BANK TRANSFER</h4>
+                    <div style="font-size: 11px; background: #fff; padding: 20px; border: 1px solid #eee; margin: 15px 0;">
+                        <strong>Bank:</strong> Verge International<br>
+                        <strong>Acc No:</strong> 0011 2233 4455<br>
+                        <strong>Ref:</strong> [Use Your Name]
+                    </div>
+                    <input type="text" placeholder="Transaction Reference #" required>
+                    
+                    <button type="submit" class="btn" style="width: 100%; background: var(--gold); color: black; margin-top: 20px;">Complete Purchase</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 VERGE PREMIUM APPAREL. AUTHENTICITY DEFINED.
+    </footer>
+
+    <script>
+        let cart = [];
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            
+            // First, remove active class and hide
+            pages.forEach(p => {
+                p.classList.remove('active-page');
+                p.style.display = 'none';
+            });
+
+            // Brief timeout to trigger the animation again
+            setTimeout(() => {
+                const active = document.getElementById(pageId);
+                active.style.display = 'block';
+                active.classList.add('active-page');
+                window.scrollTo(0,0);
+            }, 10);
+
+            if(pageId === 'cart-page') renderCart();
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            document.getElementById('cart-count').innerText = cart.length;
+            
+            // Visual feedback on button
+            const btn = event.target;
+            btn.innerText = "ADDED TO BAG";
+            btn.style.background = "#c5a059";
+            setTimeout(() => {
+                btn.innerText = "ADD TO CART";
+                btn.style.background = "#0a0a0a";
+            }, 1500);
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-items-list');
+            const totalDisplay = document.getElementById('cart-total');
+            list.innerHTML = "";
+            let total = 0;
+            if(cart.length === 0) {
+                list.innerHTML = "<tr><td colspan='2' style='text-align:center; padding: 60px; color: #999;'>Your bag is currently empty.</td></tr>";
+            } else {
+                cart.forEach(item => {
+                    total += item.price;
+                    list.innerHTML += `<tr><td style="letter-spacing:1px;">${item.name}</td><td style="font-weight:bold;">$${item.price}.00</td></tr>`;
+                });
+            }
+            totalDisplay.innerText = total;
+        }
+    </script>
+</body>
+</html>
